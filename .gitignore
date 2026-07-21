@@ -1,0 +1,11 @@
+# Build output (published by CI)
+dist/
+
+# Dependencies
+node_modules/
+
+# Yarn Berry (using node-modules linker; keep releases, ignore the rest)
+.yarn/*
+!.yarn/releases
+!.yarn/patches
+.pnp.*

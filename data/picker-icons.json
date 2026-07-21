@@ -1,0 +1,202 @@
+[
+  {
+    "name": "approval-center",
+    "bg": "#99ccee",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "clock",
+    "bg": "#347b26",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "chain-linked",
+    "bg": "#227872",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "pages-chart",
+    "bg": "#7940a1",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "computer",
+    "bg": "#a62a91",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "cloud-outline",
+    "bg": "#c92e25",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "clipboard-copy",
+    "bg": "#31689b",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "building",
+    "bg": "#a43724",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "lightning-bolt",
+    "bg": "#99ccee",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "envelope-outline",
+    "bg": "#559e38",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "globe",
+    "bg": "#46988a",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "gear",
+    "bg": "#8f6cc0",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "key",
+    "bg": "#cf51ac",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "handshake",
+    "bg": "#e4584f",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "letters",
+    "bg": "#4e8cba",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "camera",
+    "bg": "#e45621",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "pages",
+    "bg": "#b2d7f0",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "lightbulb",
+    "bg": "#80c25d",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "place-marker",
+    "bg": "#69bea8",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "pencil",
+    "bg": "#b391ca",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "person",
+    "bg": "#ee76bf",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "people",
+    "bg": "#fd7f76",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "pin",
+    "bg": "#72b0d7",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "calendar-simple",
+    "bg": "#fb8d33",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "save",
+    "bg": "#b2d7f0",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "paperclip",
+    "bg": "#a0d771",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "pulse",
+    "bg": "#8dd5be",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "smile",
+    "bg": "#c5acdd",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "sumo",
+    "bg": "#f395cd",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "rocket",
+    "bg": "#fd9993",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "tag",
+    "bg": "#90c4e4",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "color",
+    "bg": "#fbad56",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "star",
+    "bg": "#c8e2f4",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "trophy",
+    "bg": "#bbe491",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "wrench",
+    "bg": "#abe4ca",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "money-universal",
+    "bg": "#ddc8ef",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "presentation",
+    "bg": "#fbb6dd",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "image",
+    "bg": "#fcbcb7",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "home",
+    "bg": "#b7daf5",
+    "fg": "#ffffff"
+  },
+  {
+    "name": "chart-line",
+    "bg": "#fccf84",
+    "fg": "#ffffff"
+  }
+]

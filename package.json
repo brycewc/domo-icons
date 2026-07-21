@@ -1,0 +1,14 @@
+{
+  "name": "domo-icons",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Domo icon fonts (phosphor + legacy domocons) converted to individually URL-addressable SVGs, published to GitHub Pages.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "opentype.js": "^1.3.4"
+  },
+  "packageManager": "yarn@4.17.1"
+}
