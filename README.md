@@ -36,6 +36,60 @@ Examples:
 
 Browse everything at `https://<owner>.github.io/domo-icons/` (generated gallery).
 
+## Dynamic colored icons in Beast Mode
+
+The hosted `colored/` SVGs bake in a **fixed** background/icon color, so they only
+cover Domo's built-in picker palette. To render an icon with **arbitrary** colors —
+e.g. a Workspace's user-chosen background color, icon color, and background opacity —
+you can't just append the colors to a static URL: GitHub Pages can't recolor a file
+per request, an SVG loaded via `<img>` runs in "secure static mode" (no `currentColor`),
+and inlining the glyph as a `data:` URI is a non-starter because the vector paths are
+far too long to store in a Domo dataset column (median ~1.1 KB, up to ~10 KB).
+
+The fix is a tiny [Cloudflare Worker](worker/index.js) that recolors the published
+monochrome SVGs on the fly. It's a pure function of the URL, so a single **short**
+link renders any icon in any colors, and Beast Mode never touches path data:
+
+```
+https://<your-worker-domain>/<font>/<name>?bg=<hex>&fg=<hex>&o=<0..1>&r=<0..0.5>&size=<px>
+```
+
+- `bg` background color hex (no `#`); omit for a transparent background
+- `fg` icon color hex (no `#`, default `000000`)
+- `o`  background opacity `0..1` (default `1`) — applies only to the background
+- `r`  corner radius as a fraction of the box (default `0.18`; `0` = square, `0.5` = circle)
+- `size` pixel width/height stamped on the SVG (default `40`) — needed so hosts
+  like Domo scale the icon instead of rendering it full-size and clipping it
+- `font` optional path segment, `phosphor` (default) or `domocons` — `/<name>` alone works too
+
+**Beast Mode** for a Workspace with `Icon` = `workspace`, `Background Color` = `#73B0D7`,
+`Icon Color` = `#FFFFFF`, `Icon Opacity` = `0.70`:
+
+```sql
+CONCAT(
+  '<img width="40" height="40" src="https://<your-worker-domain>/', `Icon`,
+  '?bg=', REPLACE(`Background Color`, '#', ''),
+  '&fg=', REPLACE(`Icon Color`, '#', ''),
+  '&o=', `Icon Opacity`,
+  '"/>'
+)
+```
+
+### Deploy the Worker
+
+Requires a (free) Cloudflare account. From the repo root:
+
+```bash
+yarn dlx wrangler login        # one-time browser auth
+yarn dlx wrangler deploy       # deploys worker/index.js, prints the *.workers.dev URL
+yarn dlx wrangler dev          # optional: run locally at http://localhost:8787
+```
+
+Config lives in [`wrangler.toml`](wrangler.toml). The `ICONS_BASE` var points at the
+published SVGs (`https://<owner>.github.io/domo-icons`) — update it if you fork/rename
+the repo or serve the icons from a custom domain. To put the Worker on your own domain,
+add a route in the Cloudflare dashboard (or a `[[routes]]` block in `wrangler.toml`).
+
 ## How it works
 
 The icon fonts (`fonts/*.woff`) store glyphs at Private-Use-Area codepoints with **no
@@ -114,5 +168,8 @@ scripts/
   parse-css.mjs       CSS -> { phosphor, domocons } name/codepoint maps
   build.mjs           font glyphs -> dist/ SVGs + gallery
   capture-picker.js   playwriter script to refresh picker-icons.json
+worker/
+  index.js            Cloudflare Worker: recolors published SVGs on the fly
+wrangler.toml         Worker config (deploy target + ICONS_BASE)
 dist/                 build output (gitignored; published by CI)
 ```

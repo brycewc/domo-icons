@@ -1,0 +1,13 @@
+# Cloudflare Worker that recolors the published icons on the fly.
+# Deploy with: yarn dlx wrangler deploy   (see README → Dynamic colored icons)
+name = "domo-icons"
+main = "worker/index.js"
+compatibility_date = "2024-09-23"
+
+[observability]
+enabled = true
+
+# Base URL of the published monochrome SVGs. Override if you fork/rename the repo
+# or serve the SVGs from a custom domain.
+[vars]
+ICONS_BASE = "https://brycewc.github.io/domo-icons"
