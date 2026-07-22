@@ -31,13 +31,23 @@ const CACHE_SECONDS = 60 * 60 * 24; // 1 day (no `immutable`) so bug fixes reach
 // Bump whenever the *output* of the SVG assembly changes. It's mixed into the
 // edge cache key, so a redeploy with a new version bypasses every stale entry
 // (a plain redeploy does NOT clear Cloudflare's Cache API on its own).
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 3;
 
 function bad(status, message) {
   return new Response(message + '\n', {
     status,
     headers: { 'content-type': 'text/plain; charset=utf-8' },
   });
+}
+
+/**
+ * Split a validated 3/6/8-digit hex (no '#') into a 6-digit color + alpha 0..1.
+ * Folding an 8-digit color's alpha into `fill-opacity` (rather than emitting
+ * `fill="#RRGGBBAA"`) renders in every SVG engine and keeps opacity unambiguous.
+ */
+function splitHex(hex) {
+  if (hex.length === 8) return { color: hex.slice(0, 6), alpha: parseInt(hex.slice(6, 8), 16) / 255 };
+  return { color: hex, alpha: 1 };
 }
 
 /** Clamp a parsed float to [lo, hi]; returns fallback if not a finite number. */
@@ -111,14 +121,22 @@ export default {
     if (!side || inner == null) return bad(502, 'Unexpected source icon format');
 
     const dim = ` width="${size}" height="${size}"`;
-    // Root fill drives the glyph color (inner <path> has no fill of its own, so it
-    // inherits). The background <rect> carries its own fill + opacity.
-    const rect =
-      bg == null
-        ? ''
-        : `<rect width="${side}" height="${side}" rx="${round(side * radius)}" fill="#${bg}" fill-opacity="${opacity}"/>`;
+    // Any alpha carried in an 8-digit color is folded into fill-opacity. For the
+    // background it multiplies with the `o` param, so both an 8-digit bg and `o`
+    // dim it predictably; e.g. bg=FFFFFF00 -> fully transparent regardless of `o`.
+    const fgc = splitHex(fg);
+    const rootOpacity = fgc.alpha < 1 ? ` fill-opacity="${round4(fgc.alpha)}"` : '';
+    // Root fill (+ opacity) drives the glyph color; the inner <path> has no fill of
+    // its own, so it inherits. The background <rect> sets its own fill + opacity.
+    let rect = '';
+    if (bg != null) {
+      const bgc = splitHex(bg);
+      rect =
+        `<rect width="${side}" height="${side}" rx="${round(side * radius)}" ` +
+        `fill="#${bgc.color}" fill-opacity="${round4(bgc.alpha * opacity)}"/>`;
+    }
     const svg =
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${side} ${side}"${dim} fill="#${fg}">` +
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${side} ${side}"${dim} fill="#${fgc.color}"${rootOpacity}>` +
       rect +
       inner +
       `</svg>`;
@@ -137,4 +155,8 @@ export default {
 
 function round(n) {
   return Math.round(n * 100) / 100;
+}
+
+function round4(n) {
+  return Math.round(n * 10000) / 10000;
 }

@@ -57,6 +57,12 @@ https://<your-worker-domain>/<font>/<name>?bg=<hex>&fg=<hex>&o=<0..1>&r=<0..0.5>
 - `bg` background color hex (no `#`); omit for a transparent background
 - `fg` icon color hex (no `#`, default `000000`)
 - `o`  background opacity `0..1` (default `1`) — applies only to the background
+
+Colors accept 3-, 6-, or 8-digit hex. An 8-digit color's alpha (`RRGGBBAA`) is
+honored: it's folded into the fill's opacity, so `bg=FFFFFF00` is fully transparent
+and `fg=000000` `80` gives a half-opaque icon. For a background, that alpha
+**multiplies** with `o` (both dim it) — so if you already encode opacity in an
+8-digit `bg`, leave `o` at its default of `1` to avoid dimming it twice.
 - `r`  corner radius as a fraction of the box (default `0.18`; `0` = square, `0.5` = circle)
 - `size` pixel width/height stamped on the SVG (default `40`) — needed so hosts
   like Domo scale the icon instead of rendering it full-size and clipping it
