@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync, cpSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import opentype from 'opentype.js';
@@ -71,11 +71,27 @@ function writeSvg(dir, name, contents) {
   writeFileSync(join(dir, `${name}.svg`), contents);
 }
 
+/**
+ * Copy the committed `static/` tree verbatim into `dist/` (dist is wiped on every
+ * build and gitignored, so hand-added files must live in source and be copied in).
+ * Anything under `static/` publishes at the same path — e.g. `static/images/x.png`
+ * -> `https://<owner>.github.io/domo-icons/images/x.png`. No processing; add files
+ * and commit, no code change needed.
+ */
+function copyStatic() {
+  const staticDir = join(ROOT, 'static');
+  if (!existsSync(staticDir)) return;
+  cpSync(staticDir, DIST, { recursive: true });
+  console.log('static: copied static/ -> dist/');
+}
+
 function main() {
   // Fresh output tree.
   rmSync(DIST, { recursive: true, force: true });
   mkdirSync(DIST, { recursive: true });
   writeFileSync(join(DIST, '.nojekyll'), '');
+
+  copyStatic();
 
   const maps = parseCss(join(ROOT, 'style.css'));
   const geometry = {}; // key -> { side, pathData }

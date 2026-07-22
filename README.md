@@ -19,6 +19,9 @@ https://<owner>.github.io/domo-icons/domocons/<name>.svg
 https://<owner>.github.io/domo-icons/colored/<name>.svg
 ```
 
+You can also publish arbitrary files (PNG/JPG/etc.) that don't come from a font — see
+[Static files](#static-files).
+
 Examples:
 
 ```html
@@ -125,9 +128,25 @@ names**. `style.css` is the source of truth for names — it maps each class to 
 3. Emits colored circular variants for the picker icons, driven by
    [`data/picker-icons.json`](data/picker-icons.json) (white glyph on the icon's Domo
    background color).
-4. Writes a gallery `index.html` and a `.nojekyll` marker into `dist/`.
+4. Copies the committed [`static/`](static/) tree verbatim into `dist/` (see
+   [Static files](#static-files)).
+5. Writes a gallery `index.html` and a `.nojekyll` marker into `dist/`.
 
 The build is fully offline — no browser or network — so it runs unchanged in CI.
+
+## Static files
+
+`dist/` is wiped on every build and is gitignored, so you can't drop files into it
+directly. Put hand-added assets — PNGs, JPGs, anything that doesn't come from a font —
+under [`static/`](static/) instead. The build copies that tree verbatim into `dist/`,
+so each file publishes at the matching path:
+
+```
+static/images/logo.png   ->   https://<owner>.github.io/domo-icons/images/logo.png
+```
+
+No build changes or processing — just add the file, commit it, and push (CI runs
+`yarn build` and publishes). Locally, run `yarn build` and it appears under `dist/`.
 
 ## Develop
 
@@ -179,6 +198,7 @@ One-time setup: in the repo's **Settings → Pages**, set **Source = GitHub Acti
 fonts/                phosphor.woff, domocons.woff
 style.css             name -> codepoint mapping (source of truth for both fonts)
 data/picker-icons.json  captured picker icon -> color map
+static/               hand-added files copied verbatim into dist/ (e.g. images/)
 scripts/
   parse-css.mjs       CSS -> { phosphor, domocons } name/codepoint maps
   build.mjs           font glyphs -> dist/ SVGs + gallery
