@@ -154,15 +154,20 @@ function buildColored(maps, geometry) {
 }
 
 function gallery(catalog, colored) {
+  // Each tile is a button so it's keyboard-focusable and clicking it copies the
+  // icon's absolute URL. `data-name` drives client-side search filtering.
   const cell = (font, name) =>
-    `<figure><img loading="lazy" src="./${font}/${name}.svg" alt="${name}"><figcaption>${name}</figcaption></figure>`;
-  const coloredCell = (c) =>
-    `<figure><img loading="lazy" src="./colored/${c.name}.svg" alt="${c.name}"><figcaption>${c.name}</figcaption></figure>`;
-  const section = (title, html) => `<h2>${title}</h2><div class="grid">${html}</div>`;
+    `<figure class="tile" data-name="${name}" tabindex="0" role="button" aria-label="Copy link to ${font}/${name}">` +
+    `<img loading="lazy" src="./${font}/${name}.svg" alt="${name}"><figcaption>${name}</figcaption>` +
+    `<span class="copied" aria-hidden="true">Copied!</span></figure>`;
+  const section = (title, key, html) =>
+    `<section class="section" data-section="${key}"><h2 data-title="${title}">${title} ` +
+    `<span class="count"></span></h2><div class="grid">${html}</div>` +
+    `<p class="empty" hidden>No matching icons.</p></section>`;
   const parts = [];
-  if (colored.length) parts.push(section(`Colored (${colored.length})`, colored.map(coloredCell).join('')));
+  if (colored.length) parts.push(section('Colored', 'colored', colored.map((c) => cell('colored', c.name)).join('')));
   for (const font of Object.keys(catalog)) {
-    parts.push(section(`${font} (${catalog[font].length})`, catalog[font].map((n) => cell(font, n)).join('')));
+    parts.push(section(font, font, catalog[font].map((n) => cell(font, n)).join('')));
   }
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -171,14 +176,82 @@ function gallery(catalog, colored) {
   body{font:14px/1.4 system-ui,sans-serif;margin:0;padding:24px;color:#1a1a2e}
   h1{margin:0 0 4px}
   h2{margin:32px 0 12px;text-transform:capitalize}
+  h2 .count{font-weight:400;color:#999;text-transform:none}
+  .toolbar{position:sticky;top:0;z-index:10;background:#fff;padding:12px 0;margin:8px 0 4px;border-bottom:1px solid #eee}
+  #search{width:100%;max-width:420px;box-sizing:border-box;padding:9px 12px;font-size:14px;
+    border:1px solid #ccc;border-radius:8px;outline:none}
+  #search:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+  #noresults{margin:24px 0;color:#666}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px}
-  figure{margin:0;padding:10px;border:1px solid #eee;border-radius:8px;text-align:center;background:#fff}
-  figure img{width:32px;height:32px;color:#333}
+  .tile{position:relative;margin:0;padding:10px;border:1px solid #eee;border-radius:8px;
+    text-align:center;background:#fff;cursor:pointer;transition:border-color .12s,box-shadow .12s}
+  .tile:hover,.tile:focus{border-color:#7c3aed;box-shadow:0 1px 4px rgba(0,0,0,.08);outline:none}
+  .tile img{width:32px;height:32px;color:#333;pointer-events:none}
   figcaption{margin-top:6px;font-size:11px;color:#666;word-break:break-word}
+  .copied{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:#7c3aed;color:#fff;font-weight:600;border-radius:8px;opacity:0;
+    pointer-events:none;transition:opacity .12s}
+  .tile.just-copied .copied{opacity:1}
 </style></head><body>
 <h1>Domo Icons</h1>
-<p>Each icon is an individual SVG. Reference by URL, e.g. <code>./phosphor/clock.svg</code>. Monochrome icons use <code>currentColor</code>.</p>
+<p>Each icon is an individual SVG. Reference by URL, e.g. <code>./phosphor/clock.svg</code>. Monochrome icons use <code>currentColor</code>. Click any icon to copy its direct link.</p>
+<div class="toolbar"><input id="search" type="search" placeholder="Search icons…" autocomplete="off" aria-label="Search icons"></div>
+<p id="noresults" hidden>No icons match your search.</p>
 ${parts.join('\n')}
+<script>
+(function(){
+  var tiles=[].slice.call(document.querySelectorAll('.tile'));
+  var sections=[].slice.call(document.querySelectorAll('.section'));
+  var search=document.getElementById('search');
+  var noresults=document.getElementById('noresults');
+
+  function filter(q){
+    q=q.trim().toLowerCase();
+    var total=0;
+    sections.forEach(function(sec){
+      var shown=0;
+      sec.querySelectorAll('.tile').forEach(function(t){
+        var match=!q||t.dataset.name.toLowerCase().indexOf(q)!==-1;
+        t.hidden=!match;
+        if(match)shown++;
+      });
+      sec.hidden=shown===0;
+      var count=sec.querySelector('.count');
+      var title=sec.querySelector('h2').dataset.title;
+      count.textContent='('+shown+')';
+      total+=shown;
+    });
+    noresults.hidden=total!==0;
+  }
+
+  function copy(tile){
+    var url=new URL(tile.querySelector('img').getAttribute('src'),location.href).href;
+    var done=function(){
+      tile.classList.add('just-copied');
+      setTimeout(function(){tile.classList.remove('just-copied');},900);
+    };
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(done,function(){fallback(url);done();});
+    }else{fallback(url);done();}
+  }
+  function fallback(text){
+    var ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');}catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  tiles.forEach(function(t){
+    t.addEventListener('click',function(){copy(t);});
+    t.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();copy(t);}
+    });
+  });
+  search.addEventListener('input',function(){filter(search.value);});
+  filter('');
+})();
+</script>
 </body></html>\n`;
 }
 
