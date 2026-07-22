@@ -27,3 +27,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+          # This repo pins Yarn Berry via package.json "packageManager", which the
+          # action's default yarn shell-out can't satisfy on the runner (global
+          # Yarn is 1.x, Corepack off). npm installs/runs wrangler without that.
+          packageManager: npm
