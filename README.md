@@ -86,9 +86,10 @@ CONCAT(
 Requires a (free) Cloudflare account. From the repo root:
 
 ```bash
-yarn dlx wrangler login        # one-time browser auth
-yarn dlx wrangler deploy       # deploys worker/index.js, prints the *.workers.dev URL
-yarn dlx wrangler dev          # optional: run locally at http://localhost:8787
+yarn install                 # installs wrangler (a devDependency)
+yarn wrangler login          # one-time browser auth
+yarn worker:deploy           # deploys worker/index.js, prints the *.workers.dev URL
+yarn worker:dev              # optional: run locally at http://localhost:8787
 ```
 
 Config lives in [`wrangler.toml`](wrangler.toml). The `ICONS_BASE` var points at the

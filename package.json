@@ -12,5 +12,8 @@
   "dependencies": {
     "opentype.js": "^1.3.4"
   },
-  "packageManager": "yarn@4.17.1"
+  "packageManager": "yarn@4.17.1",
+  "devDependencies": {
+    "wrangler": "^4.112.0"
+  }
 }
