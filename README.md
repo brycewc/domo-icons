@@ -96,6 +96,14 @@ published SVGs (`https://<owner>.github.io/domo-icons`) — update it if you for
 the repo or serve the icons from a custom domain. To put the Worker on your own domain,
 add a route in the Cloudflare dashboard (or a `[[routes]]` block in `wrangler.toml`).
 
+Every push to `main` also redeploys the Worker automatically via
+[`.github/workflows/worker.yml`](.github/workflows/worker.yml). It needs two repo
+secrets (**Settings → Secrets and variables → Actions**):
+
+- `CLOUDFLARE_API_TOKEN` — a token with the **Edit Cloudflare Workers** permission
+  (create at *My Profile → API Tokens*, "Edit Cloudflare Workers" template).
+- `CLOUDFLARE_ACCOUNT_ID` — from any domain's overview page, or `wrangler whoami`.
+
 ## How it works
 
 The icon fonts (`fonts/*.woff`) store glyphs at Private-Use-Area codepoints with **no
